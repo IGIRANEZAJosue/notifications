@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef } from "react";
-import { Text, View, Button, Platform } from "react-native";
+import { Text, View, Button, Platform, TouchableOpacity } from "react-native";
 import * as Device from "expo-device";
 import * as Notifications from "expo-notifications";
 import tw from "twrnc";
+import { useColorScheme } from "nativewind";
+import { StatusBar } from "expo-status-bar";
 
 Notifications.setNotificationHandler({
    handleNotification: async () => ({
@@ -42,28 +44,59 @@ export default function App() {
    }, []);
 
    return (
-      <View style={tw` flex-1 items-center gap-20 p-4 `}>
-         <Text>Your notification info will be displayed below</Text>
+      <View style={tw` flex-1 items-center gap-16 p-8 bg-gray-900 `}>
+         <StatusBar style="light" />
+         <Text style={tw`text-3xl text-white font-bold text-center`}>
+            Expo Notifications
+         </Text>
+         <Text style={tw`text-lg text-white text-center`}>
+            Your notification info will be displayed below
+         </Text>
          <View style={tw`items-center justify-center `}>
-            <Text>
-               Title: {notification && notification.request.content.title}{" "}
+            <Text
+               style={tw`text-lg text-center text-white font-semibold underline`}
+            >
+               Notification Title:
             </Text>
-            <Text>
-               Body: {notification && notification.request.content.body}
+            <Text style={tw`text-md text-white text-center mb-6`}>
+               {notification && notification.request.content.title}{" "}
             </Text>
-            <Text>
-               Data:{" "}
+            <Text
+               style={tw`text-lg text-center text-white font-semibold underline`}
+            >
+               Notification Body:
+            </Text>
+            <Text style={tw`text-md text-white text-center mb-6`}>
+               {notification && notification.request.content.body}
+            </Text>
+            <Text
+               style={tw`text-lg text-center text-white font-semibold underline`}
+            >
+               Group Members:
+            </Text>
+            <Text style={tw`text-md text-white text-center mb-6`}>
+               {" "}
                {notification &&
-                  JSON.stringify(notification.request.content.data)}
+                  JSON.stringify(
+                     notification.request.content.data.Member1 +
+                        ", " +
+                        notification.request.content.data.Member2 +
+                        ", " +
+                        notification.request.content.data.Member3
+                  )}
             </Text>
          </View>
-         <Button
-            style={tw`p-4`}
-            title="Send notification"
+
+         <TouchableOpacity
+            style={tw`bg-[#6c63ff] px-8 py-4 rounded-lg`}
             onPress={async () => {
                await schedulePushNotification();
             }}
-         />
+         >
+            <Text style={`text-lg font-medium text-white`}>Send notification</Text>
+         </TouchableOpacity>
+
+         
       </View>
    );
 }
@@ -72,11 +105,11 @@ async function schedulePushNotification() {
    await Notifications.scheduleNotificationAsync({
       content: {
          title: "You've got a notification",
-         body: "Here is the notification body",
+         body: "Here is the list of the group members ",
          data: {
-            Member1: "221015279",
-            Member2: "221010009",
             Member3: "221026624",
+            Member2: "221010009",
+            Member1: "221015279",
          },
       },
       trigger: { seconds: 2 },
